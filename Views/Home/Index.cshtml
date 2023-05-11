@@ -1,0 +1,774 @@
+@{
+    ViewBag.Title = "Home Page";
+}
+
+@using Syncfusion.EJ2
+@using NodeAnnotationIssue.Controllers;
+@using Syncfusion.EJ2.Diagrams;
+@using Syncfusion.EJ2.Navigations;
+@using Syncfusion.EJ2.DropDowns
+@using Syncfusion.EJ2.Popups
+@using Syncfusion.EJ2.Lists
+
+@Html.EJS().ContextMenu("arrangeContextMenu").CssClass("arrangeMenu").AnimationSettings(new Syncfusion.EJ2.Navigations.ContextMenuAnimationSettings() { Effect = Syncfusion.EJ2.Navigations.MenuEffect.None }).BeforeClose("arrangeMenuBeforeClose").Select("contextMenuClick").OnOpen("arrangeContextMenuOpen").Items(ViewBag.arrangemenuitems).Render()
+
+<div class='diagrambuilder-container' style="display: none;">
+    <div class='header navbar'>
+        <div class="db-header-container">
+            <div class="db-diagram-name-container">
+                <span id='diagramName' style="width:250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" class="db-diagram-name"
+                      onclick="renameDiagram(event)">Untitled Diagram</span>
+                <input id='diagramEditable' type="text" class="db-diagram-name" onkeydown="diagramNameKeyDown(event)" onfocusout="diagramNameChange(event)" />
+                <span id='diagramreport' class="db-diagram-name db-save-text"></span>
+            </div>
+            <div class='db-menu-container'>
+                <div class="db-menu-style">
+                    @Html.EJS().DropDownButton("btnFileMenu").Items((IEnumerable<object>)ViewBag.filemenuitems).CssClass("db-dropdown-menu").Content("File").BeforeClose("arrangeMenuBeforeClose").Select("menuClick").BeforeOpen("arrangeMenuBeforeOpen").BeforeItemRender("beforeItemRender").Render()
+                </div>
+                <div class="db-menu-style">
+                    @Html.EJS().DropDownButton("btnEditMenu").Items((IEnumerable<object>)ViewBag.editmenuitems).CssClass("db-dropdown-menu").Content("Edit").BeforeClose("arrangeMenuBeforeClose").Select("menuClick").BeforeOpen("arrangeMenuBeforeOpen").BeforeItemRender("beforeItemRender").Render()
+                </div>
+                <div class="db-menu-style">
+                    @Html.EJS().DropDownButton("btnViewMenu").Items((IEnumerable<object>)ViewBag.viewmenuitems).CssClass("db-dropdown-menu").Content("View").BeforeClose("arrangeMenuBeforeClose").Select("menuClick").BeforeOpen("arrangeMenuBeforeOpen").BeforeItemRender("beforeItemRender").Render()
+                </div>
+                <div class="db-menu-style">
+                    @Html.EJS().DropDownButton("btnArrangeMenu").CssClass("db-dropdown-menu").Target(".e-contextmenu-wrapper.arrangeMenu").Content("Arrange").BeforeClose("arrangeMenuBeforeClose").Select("menuClick").BeforeOpen("arrangeMenuBeforeOpen").BeforeItemRender("beforeItemRender").Render()
+                </div>
+                <div class="db-menu-style">
+                    @Html.EJS().DropDownButton("btnWindowMenu").Items((IEnumerable<object>)ViewBag.windowmenuitems).CssClass("db-dropdown-menu").Content("Window").BeforeClose("arrangeMenuBeforeClose").Select("menuClick").BeforeOpen("arrangeMenuBeforeOpen").BeforeItemRender("beforeItemRender").Render()
+                </div>
+                <div class="db-menu-style" style="display: none">
+                    @Html.EJS().DropDownButton("btnHelpMenu").Items((IEnumerable<object>)ViewBag.helpmenuitems).CssClass("db-dropdown-menu").Content("Edit").BeforeClose("arrangeMenuBeforeClose").Select("menuClick").BeforeOpen("arrangeMenuBeforeOpen").BeforeItemRender("beforeItemRender").Render()
+                </div>
+            </div>
+        </div>
+        <div class='db-toolbar-editor'>
+            <div class='db-toolbar-container '>
+                <div id="toolbarEditor"></div>
+            </div>
+            <div class="db-toolbar-hide-btn">
+                @Html.EJS().Button("btnHideToolbar").IconCss("sf-icon-Collapse tb-icons").Render()
+            </div>
+        </div>
+    </div>
+    <div class='row content'>
+        <div class='sidebar show-overview'>
+            <div class="db-palette-parent">
+                @(Html.EJS().SymbolPalette("symbolpalette").Width("100%").Height("100%").ExpandMode(ExpandMode.Multiple)
+        .GetSymbolInfo("getSymbolInfo").EnableSearch(true).SymbolMargin(new SymbolPaletteMargin() { Left = 12, Bottom = 12, Right = 12, Top = 12 })
+        .SymbolPreview(new SymbolPaletteSymbolPreview { Height = 30, Width = 30 }).Palettes(ViewBag.palettes)
+        .SymbolHeight(50).SymbolWidth(50).GetNodeDefaults("setPaletteNodeDefaults").Render()
+                )
+            </div>
+            <div class="db-overview-parent">
+                <div id="overview"></div>
+            </div>
+            <div id="moreShapesDiv" class="db-palette-more-shapes">
+                <div id='overviewspan' class="db-overview">
+                    <span></span>
+                </div>
+                <div class="db-palette-more-shapes-text" onclick="moreShapesClick()">More Shapes</div>
+            </div>
+        </div>
+        <div class='main-content' role='main'>
+            <div class="db-diagram-container">
+                <div id="diagramContainerDiv" class='db-current-diagram-container'>
+                    <div id="diagram"></div>
+                </div>
+                <div class="db-more-diagram-options-container">
+                    <div id="pageOptionList">
+                    </div>
+                </div>
+            </div>
+            <div class='db-property-editor-container' style="overflow:auto;">
+                <div id="generalDiagramContainer" class="db-general-diagram-prop-container">
+                    <div id='diagramPropertyContainer' class="db-diagram-prop-container">
+                        <div class="row db-prop-header-text">
+                            Page Settings
+                        </div>
+                        <div class="row db-prop-row">
+                            @Html.EJS().DropDownList("pageSettingsList").Index(0).DataSource(
+                 (IEnumerable<object>)ViewBag.paperList).Change("DiagramPropertyBinding.prototype.paperListChange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                        </div>
+                        <div class="row db-prop-row" id="pageOrientation">
+                            <div class="col-xs-3 db-prop-col-style" style="margin-right: 8px;width: 30%;">
+                                @Html.EJS().RadioButton("pagePortrait").Label("Portrait").Name("pageSettings").Change("DiagramPropertyBinding.prototype.pageOrientationChange").Checked(false).Render()
+                            </div>
+                            <div class="col-xs-3 db-prop-col-style">
+                                @Html.EJS().RadioButton("pageLandscape").Label("Landscape").Name("pageSettings").Change("DiagramPropertyBinding.prototype.pageOrientationChange").Checked(true).Render()
+                            </div>
+                        </div>
+                        <div class="row db-prop-row" id='pageDimension' style="display:none">
+                            <div class="col-xs-6 db-col-left">
+                                <div class="db-text-container">
+                                    <div class="db-text">
+                                        <span>W</span>
+                                    </div>
+                                    <div class="db-text-input">
+                                        @Html.EJS().NumericTextBox("pageWidth").Format("n0").Value(1056).Min(100).Change("DiagramPropertyBinding.prototype.pageDimensionChange").Render()
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 db-col-right">
+                                <div class="db-text-container">
+                                    <div class="db-text">
+                                        <span>H</span>
+                                    </div>
+                                    <div class="db-text-input">
+                                        @Html.EJS().NumericTextBox("pageHeight").Format("n0").Value(816).Min(100).Change("DiagramPropertyBinding.prototype.pageDimensionChange").Render()
+                                        <input id="pageHeight" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-6 db-col-left">
+                                <div class="db-color-container">
+                                    <div class="db-color-input">
+                                        @Html.EJS().ColorPicker("pageBgColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).Value("#fff").ShowButtons(false).Change("DiagramPropertyBinding.prototype.pageBackgroundChange1").Render()
+                                    </div>
+                                    <div class="db-color-btn">
+                                        @Html.EJS().Button("pageBgColorPickerBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
+                                        <button id="pageBgColorPickerBtn"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            @Html.EJS().CheckBox("showPageBreaks").Change("DiagramPropertyBinding.prototype.pageBreaksChange").Label("Page Breaks").Render()
+                        </div>
+                    </div>
+                    <div id='nodePropertyContainer' class="db-node-prop-container" style="display:none">
+                        <div class="db-node-behaviour-prop">
+                            <div class="row db-prop-header-text">
+                                Dimensions
+                            </div>
+                            <div class="row db-prop-row">
+                                <div class="col-xs-6 db-col-left">
+                                    <div class="db-text-container">
+                                        <div class="db-text">
+                                            <span>X</span>
+                                        </div>
+                                        <div class="db-text-input">
+                                            @Html.EJS().NumericTextBox("nodeOffsetX").Format("n0").Change("nodeoffsetXchange").Render()
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 db-col-right">
+                                    <div class="db-text-container">
+                                        <div class="db-text">
+                                            <span>Y</span>
+                                        </div>
+                                        <div class="db-text-input">
+                                            @Html.EJS().NumericTextBox("nodeOffsetY").Format("n0").Change("nodeoffsetYchange").Render()
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row db-prop-row">
+                                <div class="col-xs-6 db-col-left">
+                                    <div class="db-text-container">
+                                        <div class="db-text">
+                                            <span>W</span>
+                                        </div>
+                                        <div class="db-text-input">
+                                            @Html.EJS().NumericTextBox("nodeWidth").Format("n0").Min(1).Change("nodewidthchange").Render()
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 db-col-right">
+                                    <div class="db-text-container">
+                                        <div class="db-text">
+                                            <span>H</span>
+                                        </div>
+                                        <div class="db-text-input">
+                                            @Html.EJS().NumericTextBox("nodeHeight").Format("n0").Min(1).Change("nodeheightchange").Render()
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row db-prop-row">
+                                <div class="col-xs-6 db-col-left">
+                                    @Html.EJS().CheckBox("aspectRatio").Change("nodeaspectratiochange").Checked(false).Label("Aspect Ratio").Render()
+                                </div>
+                            </div>
+                            <div class="row db-prop-row">
+                                <div class="col-xs-6 db-col-left">
+                                    <span class="db-prop-text-style">Rotate</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 db-col-left">
+                                    <div class="db-text-container">
+                                        <div class="db-text">
+                                            @Html.EJS().Button("rotateIconBtn").IconCss("sf-icon-Rotate1 tb-icons").Render()
+                                        </div>
+                                        <div class="db-text-input">
+                                            @Html.EJS().NumericTextBox("nodeRotateAngle").Format("n0").Change("noderotationchange").Render()
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="db-prop-separator">
+                            </div>
+                            <div class="row db-prop-header-text">
+                                Insert
+                            </div>
+                            <div class="row db-prop-row">
+                                <div class="col-xs-6 db-col-left">
+                                    <div id="toolbarNodeInsert"></div>
+                                </div>
+                            </div>
+                            <div class="db-prop-separator">
+                            </div>
+                        </div>
+                        <div id='nodeStyleProperties' class="db-node-style-prop">
+                            <div class="row db-background-style">
+                                <div class="row db-prop-header-text">
+                                    Background and Border Styles
+                                </div>
+                                <div class="row db-prop-row">
+                                    <div class="col-xs-6 db-col-left">
+                                        <div class="db-color-container">
+                                            <div class="db-color-input">
+                                                @Html.EJS().ColorPicker("nodeFillColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("nodecolorchange").Render()
+                                            </div>
+                                            <div class="db-color-btn">
+                                                @Html.EJS().Button("fillColorIconBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id='gradientStyle' class="row db-prop-row db-gradient-style-hide">
+                                    <div class="col-xs-4 db-col-left">
+                                        @Html.EJS().CheckBox("gradient").Change("nodegradientchange").Label("Gradient").Render()
+                                    </div>
+                                    <div class="col-xs-4 db-col-center">
+                                        @Html.EJS().DropDownList("gradientDirectionDropdown").PopupWidth("200px").Index(0).DataSource(
+                                            (IEnumerable<object>)ViewBag.gradientDirections).Change("nodegradientdirectionchange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                                    </div>
+                                    <div class="col-xs-4 db-col-right">
+                                        <div class="db-color-container">
+                                            <div class="db-color-input">
+                                                @Html.EJS().ColorPicker("nodeGradientColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("nodegradientcolorchange").Render()
+                                            </div>
+                                            <div class="db-color-btn">
+                                                @Html.EJS().Button("gradientColorIconBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row db-border-style">
+                                <div class="row db-prop-header-text db-border-style-header">
+                                    Border/Line Styles
+                                </div>
+                                <div class="row db-prop-row">
+                                    <div class="col-xs-4 db-col-right">
+                                        <span class="db-prop-text-style">Stroke Color</span>
+                                    </div>
+                                    <div class="col-xs-4 db-col-center">
+                                        <span class="db-prop-text-style">Stroke Style</span>
+                                    </div>
+                                    <div class="col-xs-4 db-col-left">
+                                        <span class="db-prop-text-style">Stroke Width</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-4 db-col-left">
+                                        <div class="db-color-container">
+                                            <div class="db-color-input">
+                                                @Html.EJS().ColorPicker("nodeStrokeColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("nodestrokecolorchange").Render()
+                                            </div>
+                                            <div class="db-color-btn">
+                                                @Html.EJS().Button("strokeColorIconBtn").IconCss("sf-icon-Pickers tb-icons").Render()
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-4 db-col-center">
+                                        <input type="text" id='nodeBorderStyle' />
+                                    </div>
+                                    <div class="col-xs-4 db-col-right">
+                                        @Html.EJS().NumericTextBox("nodeStrokeWidth").Min(0).Step(0.5).Change("nodestrokewidthchange").Render()
+                                    </div>
+                                </div>
+                                <div class="row db-prop-row">
+                                    <div class="col-xs-2 db-col-right db-prop-text-style" style="padding-top: 6px">
+                                        <span class="db-prop-text-style">Opacity</span>
+                                    </div>
+                                    <div class="col-xs-8 db-col-left" style="padding-right:10px">
+                                        <div id='nodeOpacitySlider'></div>
+                                    </div>
+                                    <div class="col-xs-2 db-col-right">
+                                        <input id="nodeOpacitySliderText" type="text" value='100%' readOnly="true" class="db-readonly-input" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='connectorPropertyContainer' class="db-connector-prop-container" style="display:none">
+                        <div class="row db-prop-header-text">
+                            Connector Properties
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-6 db-col-left db-prop-text-style">
+                                <span class="db-prop-text-style">Connector Type</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 db-col-left">
+                                @Html.EJS().DropDownList("lineTypeDropdown").DataSource(
+                    (IEnumerable<object>)ViewBag.lineTypes).Change("lineTypeDropdownchange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-6 db-col-left">
+                                <div class="db-color-container">
+                                    <div class="db-color-input">
+                                        @Html.EJS().ColorPicker("lineColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("lineColorchange").Render()
+                                    </div>
+                                    <div class="db-color-btn">
+                                        @Html.EJS().Button("lineColorIconBtn").IconCss("sf-icon-Pickers tb-icons").Render()
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-8 db-col-left db-prop-text-style">
+                                <span class="db-prop-text-style">Stroke Style</span>
+                            </div>
+                            <div class="col-xs-4 db-col-right db-prop-text-style">
+                                <span class="db-prop-text-style">Thickness</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-8 db-col-left">
+                                <input type="text" id='lineStyle' />
+                            </div>
+                            <div class="col-xs-4 db-col-right">
+                                @Html.EJS().NumericTextBox("lineWidth").Min(0.5).Step(0.5).Change("lineWidthchange").Render()
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-8 db-col-left db-prop-text-style">
+                                <span class="db-prop-text-style">Start Arrow</span>
+                            </div>
+                            <div class="col-xs-4 db-col-right db-prop-text-style">
+                                <span class="db-prop-text-style">Size</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-8 db-col-left">
+                                @Html.EJS().DropDownList("sourceType").DataSource(
+                                    (IEnumerable<object>)ViewBag.decoratorList).Change("sourceTypechange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                            </div>
+                            <div class="col-xs-4 db-col-right">
+                                @Html.EJS().NumericTextBox("sourceSize").Min(1).Step(1).Change("sourceSizechange").Render()
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-8 db-col-left db-prop-text-style">
+                                <span class="db-prop-text-style">End Arrow</span>
+                            </div>
+                            <div class="col-xs-4 db-col-right db-prop-text-style">
+                                <span class="db-prop-text-style">Size</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-8 db-col-left">
+                                @Html.EJS().DropDownList("targetType").DataSource(
+                                 (IEnumerable<object>)ViewBag.decoratorList).Change("targetTypechange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                            </div>
+                            <div class="col-xs-4 db-col-right">
+                                @Html.EJS().NumericTextBox("targetSize").Min(1).Step(1).Change("targetSizechange").Render()
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-8 db-col-left" style="margin-top:5px">
+                                @Html.EJS().CheckBox("lineJump").Change("lineJumpchange").Checked(false).Label("Bridging").Render()
+                            </div>
+                            <div class="col-xs-4 db-col-right" id="lineJumpSizeDiv" style="display:none">
+                                @Html.EJS().NumericTextBox("lineJumpSize").Min(1).Step(1).Change("lineJumpSizechange").Render()
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            @Html.EJS().CheckBox("SegmentEditing").Change("SegmentEditing").Checked(false).Label("Segment Editing").Render()
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-2 db-col-right db-prop-text-style" style="padding-top: 6px">
+                                <span class="db-prop-text-style">Opacity</span>
+                            </div>
+                            <div class="col-xs-8 db-col-left" style="padding-right:10px">
+                                <div id='default1'></div>
+                            </div>
+                            <div class="col-xs-2 db-col-right">
+                                <input type="text" id="connectorOpacitySliderText" value='100%' readonly="true" class="db-readonly-input" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id='textPropertyContainer' class="db-text-prop-container" style="display:none">
+                        <div class="db-prop-separator">
+                        </div>
+                        <div class="row db-prop-header-text">
+                            Text
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-8 db-col-left">
+                                @Html.EJS().DropDownList("fontFamily").Index(0).DataSource(
+                              (IEnumerable<object>)ViewBag.fontFamilyList).Change("fontFamilychange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                            </div>
+                            <div class="col-xs-4 db-col-right">
+                                @Html.EJS().NumericTextBox("fontSizeTextProperties").Min(1).Step(1).Change("fontSizechange").Render()
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-6 db-col-left" id="textPositionDiv">
+                                <input type="text" id='ddlTextPosition' />
+                            </div>
+                            <div class="col-xs-6 db-col-right" id="textColorDiv">
+                                <div class="db-color-container">
+                                    <div class="db-color-input">
+                                        @Html.EJS().ColorPicker("textColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("fontColorchange").Value("#000000").Render()
+                                    </div>
+                                    <div class="db-color-btn">
+                                        @Html.EJS().Button("fontColorBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-6 db-col-left">
+                                <div id="toolbarTextStyle"></div>
+                            </div>
+                            <div class="col-xs-6 db-col-right">
+                                <div id="toolbarTextSubAlignment"></div>
+                            </div>
+                        </div>
+                        <div class="row db-prop-row" id='toolbarTextAlignmentDiv'>
+                            <div id="toolbarTextAlignment"></div>
+                        </div>
+                        <div class="row db-prop-row">
+                            <div class="col-xs-2 db-col-right db-prop-text-style" style="padding-top: 6px">
+                                <span class="db-prop-text-style">Opacity</span>
+                            </div>
+                            <div class="col-xs-8 db-col-left" style="padding-right:10px">
+                                <div id='opacityTextSlider'></div>
+                            </div>
+                            <div class="col-xs-2 db-col-right">
+                                <input id='textOpacityText' type="text" value='100%' class="db-readonly-input" readOnly="true" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id='mindMapContainer' class="db-mindmap-prop-container">
+                    <div class="row db-prop-header-text">
+                        MindMap Pattern
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="mindmapPropertyBinding.mindmapPatternChange(event)" class="mindmap-pattern-style mindmap-pattern1"></div>
+                        </div>
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="mindmapPropertyBinding.mindmapPatternChange(event)" class="mindmap-pattern-style mindmap-pattern2"></div>
+                        </div>
+                    </div>
+                    <div class="row db-prop-row" style="margin-top:5px">
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="mindmapPropertyBinding.mindmapPatternChange(event)" class="mindmap-pattern-style mindmap-pattern3"></div>
+                        </div>
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="mindmapPropertyBinding.mindmapPatternChange(event)" class="mindmap-pattern-style mindmap-pattern4"></div>
+                        </div>
+                    </div>
+                    <div class="db-prop-separator">
+                    </div>
+                    <div class="row db-prop-header-text">
+                        MindMap Levels Styles
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-6 db-col-left">
+                            @Html.EJS().DropDownList("mindMapLevels").Index(0).DataSource(
+                            (IEnumerable<object>)ViewBag.mindmapLevels).Change("mindMapLevelschange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                        </div>
+                    </div>
+                    <div id='mindMapFill' class="row db-prop-row">
+                        <div class="col-xs-6 db-col-left">
+                            <div class="db-color-container">
+                                <div class="db-color-input">
+                                    @Html.EJS().ColorPicker("mindmapFill").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("mindmapFillchange").Render()
+                                </div>
+                                <div class="db-color-btn">
+                                    @Html.EJS().Button("fontColorBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
+                                    <button id="mindmapFillIconBtn"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-4 db-col-left">
+                            <div class="db-color-container">
+                                <div class="db-color-input">
+                                    @Html.EJS().ColorPicker("mindmapStroke").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("mindmapStrokechange").Render()
+                                </div>
+                                <div class="db-color-btn">
+                                    @Html.EJS().Button("mindmapStrokeIconBtn").IconCss("sf-icon-Pickers tb-icons").Render()
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4 db-col-center">
+                            <input type="text" id='strokeStyle' />
+                        </div>
+                        <div class="col-xs-4 db-col-right">
+                            @Html.EJS().NumericTextBox("mindmapStrokeWidth").Min(1).Step(1).Change("mindmapStrokeWidthchange").Render()
+                        </div>
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-2 db-col-right db-prop-text-style" style="padding-top: 6px">
+                            <span class="db-prop-text-style">Opacity</span>
+                        </div>
+                        <div class="col-xs-8 db-col-left" style="padding-right:10px">
+                            <div id='mindmapOpacitySlider'></div>
+                        </div>
+                        <div class="col-xs-2 db-col-right">
+                            <input type="text" readOnly="true" id="mindmapOpacityText" class="db-readonly-input" />
+                        </div>
+                    </div>
+                    <div style="margin-top:10px;margin-bottom: 15px"></div>
+                    <div class="row db-prop-header-text">
+                        Text Style
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-8 db-col-left">
+                            @Html.EJS().DropDownList("mindmapFontFamilyList").Index(0).DataSource(
+                             (IEnumerable<object>)ViewBag.fontFamilyList).Change("mindmapFontFamilyListchange").Fields(new DropDownListFieldSettings { Text = "text", Value = "value" }).Render()
+                        </div>
+                        <div class="col-xs-4 db-col-right">
+                            @Html.EJS().NumericTextBox("mindmapFontSize").Min(1).Step(1).Change("mindmapFontSizechange").Render()
+                        </div>
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-6 db-col-left">
+                            <div id="mindmapTextStyleToolbar"></div>
+                            <div id="mindmapTextStyleToolbar"></div>
+                        </div>
+                        <div class="col-xs-6 db-col-right" id="textColorDiv">
+                            <div class="db-color-container">
+                                <div class="db-color-input">
+                                    @Html.EJS().ColorPicker("mindmapTextColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("mindmapTextColorchange").Render()
+                                    <input id="mindmapTextColor" type="color">
+                                </div>
+                                <div class="db-color-btn">
+                                    @Html.EJS().Button("textColorIconBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-2 db-col-right db-prop-text-style" style="padding-top: 6px">
+                            <span class="db-prop-text-style">Opacity</span>
+                        </div>
+                        <div class="col-xs-8 db-col-left" style="padding-right:10px">
+                            <div id='mindmapTextOpacitySlider'></div>
+                        </div>
+                        <div class="col-xs-2 db-col-right">
+                            <input type="text" id="textOpacityText" class="db-readonly-input" readOnly="true" />
+                        </div>
+                    </div>
+                </div>
+                <div id='orgChartContainer' class="db-orgchart-prop-container">
+                    <div class="row db-prop-row db-prop-header-text">
+                        Import
+                    </div>
+                    <div class="row db-prop-row" style="height:28px">
+                        <button id="btnImportData"></button>
+                    </div>
+                    <div class="db-prop-separator">
+                    </div>
+                    <div class="row db-prop-header-text">
+                        OrgChart Settings
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-6 db-col-left">
+                            <span class="db-prop-text-style">Horizontal Spacing</span>
+                        </div>
+                        <div class="col-xs-6 db-col-right">
+                            <span class="db-prop-text-style">Vertical Spacing</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 db-col-left">
+                            @Html.EJS().NumericTextBox("orgHorizontalSpacing").Min(25).Step(1).Format("n0").Value("50").Change("OrgChartPropertyBinding.prototype.orgChartSpacingChange").Render()
+                        </div>
+                        <div class="col-xs-6 db-col-right">
+                            @Html.EJS().NumericTextBox("orgVerticalSpacing").Min(25).Step(1).Format("n0").Value("50").Change("OrgChartPropertyBinding.prototype.orgChartSpacingChange").Render()
+                        </div>
+                    </div>
+                    <div class="row db-prop-row">
+                        <div id="orgChartAlignment">
+                        </div>
+                    </div>
+                    <div class="db-prop-separator">
+                    </div>
+                    <div class="row db-prop-row db-prop-header-text">
+                        Orientation Styles
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="orgChartPropertyBinding.layoutOrientationChange(event)" class="org-pattern-style org-pattern-1 vertical-alternate"
+                                 style="background-image: url('/Content/assets/dbstyle/orgchart_images/org-pattern1.svg')">
+                            </div>
+                        </div>
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="orgChartPropertyBinding.layoutOrientationChange(event)" class="org-pattern-style org-pattern-2 vertical-left"
+                                 style="background-image: url('/Content/assets/dbstyle/orgchart_images/org-pattern2.svg')"></div>
+                        </div>
+                    </div>
+                    <div class="row db-prop-row" style="margin-top:5px">
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="orgChartPropertyBinding.layoutOrientationChange(event)" class="org-pattern-style org-pattern-3 vertical-right"
+                                 style="background-image: url('/Content/assets/dbstyle/orgchart_images/org-pattern3.svg')"></div>
+                        </div>
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="orgChartPropertyBinding.layoutOrientationChange(event)" class="org-pattern-style org-pattern-4 horizontal-center"
+                                 style="background-image: url('/Content/assets/dbstyle/orgchart_images/org-pattern4.svg')"></div>
+                        </div>
+                    </div>
+                    <div class="row db-prop-row" style="margin-top:5px">
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="orgChartPropertyBinding.layoutOrientationChange(event)" class="org-pattern-style org-pattern-5 horizontal-right"
+                                 style="background-image: url('/Content/assets/dbstyle/orgchart_images/org-pattern5.svg');"></div>
+                        </div>
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div onclick="orgChartPropertyBinding.layoutOrientationChange(event)" class="org-pattern-style org-pattern-6 horizontal-left"
+                                 style="background-image: url('/Content/assets/dbstyle/orgchart_images/org-pattern6.svg')"></div>
+                        </div>
+                    </div>
+                    <div class="db-prop-separator">
+                    </div>
+                    <div class="row db-prop-header-text">
+                        OrgChart Templates
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div id="orgPattern1" onclick="orgChartPropertyBinding.layoutPatternChange(event)" class="org-pattern-style"></div>
+                        </div>
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div id="orgPattern2" onclick="orgChartPropertyBinding.layoutPatternChange(event)" class="org-pattern-style"></div>
+                        </div>
+                    </div>
+                    <div class="row db-prop-row">
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div id="orgPattern3" onclick="orgChartPropertyBinding.layoutPatternChange(event)" class="org-pattern-style"></div>
+                        </div>
+                        <div class="col-xs-6 org-pattern-parent">
+                            <div id="orgPattern4" onclick="orgChartPropertyBinding.layoutPatternChange(event)" class="org-pattern-style"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="exportDialog"></div>
+
+<div id="printDialog"></div>
+
+<div id="fileUploadDialog"></div>
+
+<div id="diagramTemplateDiv" class="db-diagram-template-div" style="display: none">
+    <div class="db-diagram-template-image-div">
+        <div class="db-diagram-template-image">
+        </div>
+    </div>
+    <div class="db-diagram-template-text">
+        <span id="diagramTemplateText"></span>
+    </div>
+</div>
+
+<div id="diagramTemplateDiv1" style="display: none">
+    <div class="row">
+        <div class="col-xs-3 temp-left-pane">
+            <div class="row db-diagram-template-parent-text flowdiagram-template">
+                <span>Flow Chart</span>
+            </div>
+            <div class="row db-diagram-template-parent-text mindmap-template">
+                <span>Mind Map</span>
+            </div>
+            <div class="row db-diagram-template-parent-text orgchart-template">
+                <span>Org Chart</span>
+            </div>
+        </div>
+        <div class="col-xs-9 diagramTemplates temp-right-pane" style="padding-left:0px;padding-right:0px">
+        </div>
+    </div>
+</div>
+
+<div id="openTemplateDialog"></div>
+
+<div id="saveDialog"></div>
+
+<div id="moreShapesDialogContent"></div>
+
+<div id="tooltipDialog"></div>
+
+<div id="hyperlinkDialog"></div>
+
+<div class="db-custom-prop-template" style="display:none">
+    <div class="row">
+        <div class="col-xs-6 db-col-left" style="width:70%">
+            <input class="txtPropertyName" type="text" placeholder="Enter Property Name" style="width:100%; height:27px">
+        </div>
+        <div class="col-xs-6 db-col-right" style="width:30%">
+            <button class="db-custom-prop-button" style="width:100%; text-transform: none;box-shadow: 0 0 0 0">Add Property</button>
+        </div>
+    </div>
+</div>
+
+<div class="db-custom-prop-info-template" style="display:none">
+    <div class="row">
+        <div class="col-xs-6 db-col-left propertyNameDiv">
+        </div>
+        <div class="col-xs-6 db-col-right propertyValueDiv">
+            <input type="text" class="propertyValue" style="height: 27px" />
+        </div>
+        <div class="propertyTooltipDiv">
+            <input type="checkbox" class="propertyCheckBox" />
+        </div>
+        <div class="propertyLabelDiv">
+            <button class="btnRemoveProperty" style="height: 20px; width: 27px"></button>
+        </div>
+    </div>
+</div>
+
+<div class="db-place-holder" style="display:none">
+    <div class="row">
+        <input type="checkbox" class="chkPlaceholders" />
+    </div>
+</div>
+
+<div id="customPropertyDialog"></div>
+
+<div class="db-layer-template" style="display: none">
+    <div class="row">
+        <div class="db-layer-content-name">
+            <span class="db-layer-name"></span>
+            <input type="text" class="db-layer-edit" />
+        </div>
+        <div class="db-layer-content-btn">
+            <button class="db-layer-lock"></button>
+        </div>
+        <div class="db-layer-content-btn">
+            <button class="db-layer-visible"></button>
+        </div>
+    </div>
+</div>
+
+<div id="layerDialog"></div>
+
+<div id="themeDialog"></div>
+
+<div id="deleteConfirmationDialog"></div>
+
+
