@@ -116,7 +116,6 @@
                                     </div>
                                     <div class="db-text-input">
                                         @Html.EJS().NumericTextBox("pageHeight").Format("n0").Value(816).Min(100).Change("DiagramPropertyBinding.prototype.pageDimensionChange").Render()
-                                        <input id="pageHeight" type="text" />
                                     </div>
                                 </div>
                             </div>
@@ -129,7 +128,6 @@
                                     </div>
                                     <div class="db-color-btn">
                                         @Html.EJS().Button("pageBgColorPickerBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
-                                        <button id="pageBgColorPickerBtn"></button>
                                     </div>
                                 </div>
                             </div>
@@ -498,8 +496,7 @@
                                     @Html.EJS().ColorPicker("mindmapFill").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("mindmapFillchange").Render()
                                 </div>
                                 <div class="db-color-btn">
-                                    @Html.EJS().Button("fontColorBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
-                                    <button id="mindmapFillIconBtn"></button>
+                                    @Html.EJS().Button("fontColorBtn2").IconCss("sf-icon-ColorPickers tb-icons").Render()
                                 </div>
                             </div>
                         </div>
@@ -555,7 +552,6 @@
                             <div class="db-color-container">
                                 <div class="db-color-input">
                                     @Html.EJS().ColorPicker("mindmapTextColor").Mode(Syncfusion.EJ2.Inputs.ColorPickerMode.Palette).ShowButtons(false).Change("mindmapTextColorchange").Render()
-                                    <input id="mindmapTextColor" type="color">
                                 </div>
                                 <div class="db-color-btn">
                                     @Html.EJS().Button("textColorIconBtn").IconCss("sf-icon-ColorPickers tb-icons").Render()
@@ -571,7 +567,7 @@
                             <div id='mindmapTextOpacitySlider'></div>
                         </div>
                         <div class="col-xs-2 db-col-right">
-                            <input type="text" id="textOpacityText" class="db-readonly-input" readOnly="true" />
+                            <input type="text" id="textOpacityText2" value="100%" class="db-readonly-input" readOnly="true" />
                         </div>
                     </div>
                 </div>
