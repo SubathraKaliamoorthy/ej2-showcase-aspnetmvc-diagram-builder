@@ -195,13 +195,15 @@ var Palettes = (function () {
             palettes.push({ id: 'connectors', expanded: false, symbols: Palettes.prototype.getConnectors(), title: 'Connectors' });
         }
         if (text.indexOf('Electrical') !== -1) {
-            palettes = palettes.concat(this.electricalShapes.getElectricalShapes());
+            palettes = palettes.concat(ElectricalShapes.prototype.getElectricalShapes());
         }
         if (text.indexOf('Network') !== -1) {
-            palettes.push({ id: 'network', expanded: false, symbols: this.networkShapes.getNetworkShapes(), title: 'Network Shapes' });
+
+            palettes.push({ id: 'network', expanded: false, symbols: NetworkShapes.prototype.getNetworkShapes(), title: 'Network Shapes' });
         }
         if (text.indexOf('Floorplan') !== -1) {
-            palettes.push({ id: 'floorplan', expanded: false, symbols: this.floorplans.getFloorPlans(), title: 'Floorplan Shapes' });
+
+            palettes.push({ id: 'floorplan', expanded: false, symbols: FloorplanShapes.prototype.getFloorPlans(), title: 'Floorplan Shapes' });
         }
         return palettes;
     };

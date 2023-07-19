@@ -819,7 +819,7 @@ var SelectorViewModel = (function () {
                     break;
                 case 'textopacity':
                     annotation.opacity = document.getElementById('mindmapTextOpacitySlider').ej2_instances[0].value / 100;
-                    document.getElementById("textOpacity").value = document.getElementById('mindmapTextOpacitySlider').ej2_instances[0].value + '%';
+                    document.getElementById("textOpacityText2").value = document.getElementById('mindmapTextOpacitySlider').ej2_instances[0].value + '%';
                     break;
             }
         }

@@ -261,6 +261,7 @@ var MindMap = (function () {
                 horizontalSpacing: 100,
                 verticalSpacing: 50,
                 type: 'MindMap',
+                orientation:'Horizontal',
                 getBranch: function (node) {
                     if (node.addInfo) {
                         var addInfo = node.addInfo;

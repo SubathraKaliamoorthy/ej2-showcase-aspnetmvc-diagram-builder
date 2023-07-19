@@ -62,7 +62,7 @@ window.onload = function () {
 function setPaletteNodeDefaults(node) {
     if (!(node.addInfo && (node.addInfo).type === 'CustomShapes') && (!node.children)) {
         if (node.id === 'Terminator' || node.id === 'Process') {
-            node.width = 80;
+            node.width = 130;
             node.height = 65;
         } else {
             node.width = 50;
@@ -78,6 +78,10 @@ function setPaletteNodeDefaults(node) {
         node.style.strokeColor = '#3A3A3A';
     }
 };
+
+function getSymbolInfo(symbol) {
+    return {fit: true}
+}
 
 function getNodeDefaults(node, diagram) {
     if (!(selectedItem.diagramType === 'MindMap' || selectedItem.diagramType === 'OrgChart' || selectedItem.diagramType === 'FlowChart')) {
@@ -1511,7 +1515,7 @@ function mindmapFontFamilyListchange(args) {
     SelectorViewModel.prototype.mindMapPropertyChange({ propertyName: 'fontFamily', propertyValue: args });
 }
 function mindmapFontSizechange(args) {
-    document.getElementById('mindmapFontSize').ej2_instances[0].value = args.value;
+    document.getElementById('mindmapFontSize').ej2_instances[0].value = args.value === null ? 12 : args.value;
     SelectorViewModel.prototype.mindMapPropertyChange({ propertyName: 'fontSize', propertyValue: args });
 }
 function mindmapTextColorchange(args) {
@@ -1653,7 +1657,7 @@ function btnCancelClick(args) {
             OrgChartUtilityMethods.uploadDialog.hide();
             OrgChartUtilityMethods.isUploadSuccess = false;
             break;
-        case 'moreShapesDialog':
+        case 'moreShapesDialogContent':
             moreShapesDialog.hide();
             break;
     }
@@ -2221,29 +2225,6 @@ function removeSelectedToolbarItem(args) {
     document.getElementById('btnDrawShape').classList.remove('tb-item-selected');
     document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
 }
-
-function lockObject(args) {
-    selectedItem.isModified = true;
-    var diagram = selectedItem.selectedDiagram;
-    for (var i = 0; i < diagram.selectedItems.nodes.length; i++) {
-        var node = diagram.selectedItems.nodes[i];
-        if (node.constraints & ej.diagrams.NodeConstraints.Drag) {
-            node.constraints = ej.diagrams.NodeConstraints.PointerEvents | ej.diagrams.NodeConstraints.Select;
-        } else {
-            node.constraints = ej.diagrams.NodeConstraints.Default;
-        }
-    }
-    for (var j = 0; j < diagram.selectedItems.connectors.length; j++) {
-        var connector = diagram.selectedItems.connectors[j];
-        if (connector.constraints & ej.diagrams.ConnectorConstraints.Drag) {
-            connector.constraints = ej.diagrams.ConnectorConstraints.PointerEvents | ej.diagrams.ConnectorConstraints.Select;
-        } else {
-            connector.constraints = ej.diagrams.ConnectorConstraints.Default;
-        }
-    }
-    diagram.dataBind();
-}
-
 
 
 function renameDiagram(args) {

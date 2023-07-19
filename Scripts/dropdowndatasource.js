@@ -6,7 +6,7 @@
     DropDownDataSources.prototype.fileFormats = function () {
         var fileFormats = [
             { text: 'JPG', value: 'JPG' }, { text: 'PNG', value: 'PNG' },
-            { text: 'BMP', value: 'BMP' }, { text: 'SVG', value: 'SVG' }
+            { text: 'SVG', value: 'SVG' }
         ];
         return fileFormats;
     };
