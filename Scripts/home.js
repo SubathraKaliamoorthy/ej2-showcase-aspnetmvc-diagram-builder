@@ -303,20 +303,6 @@ var diagram = new ej.diagrams.Diagram({
 });
 diagram.appendTo('#diagram');
 
-var symbolPalette = new ej.diagrams.SymbolPalette({
-    width: "100%",
-    height: "100%",
-    expandMode: "Multiple",
-    getSymbolInfo: getSymbolInfo,
-    enableSearch: true,
-    symbolMargin: { Left : 12, Bottom : 12, Right : 12, Top : 12 },
-    symbolPreveiw: { height: 30, width: 30 },
-    symbolWidth: 50, symbolHeight: 50,
-    palettes: Palettes.prototype.getSymbolPalette(),
-    getNodeDefaults: setPaletteNodeDefaults
-
-});
-symbolPalette.appendTo('#symbolpalette');
 
 var toolbarNodeInsert = new ej.navigations.Toolbar({
     overflowMode: 'Scrollable',
