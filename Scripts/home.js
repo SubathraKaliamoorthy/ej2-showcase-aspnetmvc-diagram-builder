@@ -252,6 +252,12 @@ var diagram = new ej.diagrams.Diagram({
             node.width = 100;
             node.height = 40;
         }
+        if (selectedItem.diagramType === 'GeneralDiagram') {
+            if (node.shape.shape === 'Decision') {
+                node.width = 88;
+                node.height = 85;
+            }
+        }
         if (!(selectedItem.diagramType === 'MindMap' || selectedItem.diagramType === 'OrgChart')) {
             node.ports = [
                 { offset: { x: 0, y: 0.5 }, style: { fill: 'white' }, visibility: ej.diagrams.PortVisibility.Connect | ej.diagrams.PortVisibility.Hover, constraints: ej.diagrams.PortConstraints.Default | ej.diagrams.PortConstraints.Draw },
@@ -296,6 +302,7 @@ var diagram = new ej.diagrams.Diagram({
     textEdit: function (args) { DiagramClientSideEvents.prototype.textEdit(args); }
 });
 diagram.appendTo('#diagram');
+
 
 var toolbarNodeInsert = new ej.navigations.Toolbar({
     overflowMode: 'Scrollable',
@@ -818,7 +825,6 @@ var layerDialog = new ej.popups.Dialog({
     height: '400px',
     header: 'Layers',
     target: document.body,
-    isModal: true,
     animationSettings: { effect: 'None' },
     allowDragging: true,
     visible: false,
@@ -1674,7 +1680,7 @@ function btnHyperLink() {
         var annotation = {
             hyperlink: {
                 content: document.getElementById('hyperlinkText').value,
-                link: document.getElementById('hyperlink').value
+                link: "https://" + document.getElementById('hyperlink').value
             }
         };
         selectedItem.selectedDiagram.addLabels(node, [annotation]);
@@ -2074,7 +2080,7 @@ function executeEditMenu(diagram, commandType) {
             this.pasteObjects();
             break;
         case 'delete':
-            this.delete();
+            deleteData();
             break;
         case 'duplicate':
             CommonKeyboardCommands.duplicateSelectedItems();

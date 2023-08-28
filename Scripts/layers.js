@@ -59,31 +59,47 @@ var DiagramBuilderLayer = (function () {
         var visibleElements = document.getElementsByClassName('db-layer-visible');
         var lockElements = document.getElementsByClassName('db-layer-lock');
         var layers = this.getLayers();
+
+        // Process each layer
         for (var i = 0; i < layers.length; i++) {
             var layer = layers[i];
-            var visibleLayer = new ej.buttons.Button({
-                iconCss: layer.visible ? 'sf-icon-View' : 'sf-icon-Invisible',
-                cssClass: layer.id
-            });
             var visibleElement = visibleElements[layers.length - i];
-            visibleElement.title = layer.visible ? 'Visible' : 'Invisible';
-            visibleLayer.appendTo(visibleElement);
-            visibleElement.onclick = this.changeLayerVisibility.bind(this);
-            if (!layer.visible) {
-                visibleElement.parentElement.className = 'db-layer-content-btn db-layer-invisible';
-            }
             var lockElement = lockElements[layers.length - i];
-            var lockLayer = new ej.buttons.Button({
-                iconCss: layer.lock ? 'sf-icon-Lock' : 'sf-icon-Unlock',
-                cssClass: layer.id,
-            });
-            lockLayer.appendTo(lockElement);
-            lockElement.title = layer.lock ? 'Lock' : 'Unlock';
-            lockElement.onclick = this.changeLayerSelection.bind(this);
-            if (layer.lock) {
-                lockElement.parentElement.className = 'db-layer-content-btn db-layer-invisible';
+
+            // Check if the layer has already been processed
+            if (!visibleElement.classList.contains('db-layer-processed') && !lockElement.classList.contains('db-layer-processed')) {
+                // Append the visibility button
+                var visibleLayer = new ej.buttons.Button({
+                    iconCss: layer.visible ? 'sf-icon-View' : 'sf-icon-Invisible',
+                    cssClass: layer.id
+                });
+                visibleElement.title = layer.visible ? 'Visible' : 'Invisible';
+                visibleLayer.appendTo(visibleElement);
+                visibleElement.onclick = this.changeLayerVisibility.bind(this);
+
+                if (!layer.visible) {
+                    visibleElement.parentElement.className = 'db-layer-content-btn db-layer-invisible';
+                }
+
+                // Append the lock button
+                var lockLayer = new ej.buttons.Button({
+                    iconCss: layer.lock ? 'sf-icon-Lock' : 'sf-icon-Unlock',
+                    cssClass: layer.id,
+                });
+                lockLayer.appendTo(lockElement);
+                lockElement.title = layer.lock ? 'Lock' : 'Unlock';
+                lockElement.onclick = this.changeLayerSelection.bind(this);
+
+                if (layer.lock) {
+                    lockElement.parentElement.className = 'db-layer-content-btn db-layer-invisible';
+                }
+
+                // Mark the layer as processed
+                visibleElement.classList.add('db-layer-processed');
+                lockElement.classList.add('db-layer-processed');
             }
         }
+
         var layerNameElements = document.getElementsByClassName('db-layer-name');
         for (var i = 0; i < layerNameElements.length; i++) {
             var layerNameElement = layerNameElements[i];
@@ -93,6 +109,7 @@ var DiagramBuilderLayer = (function () {
             layerNameElement.parentElement.children[1].addEventListener('keydown', this.renameLayerKeyDown.bind(this));
         }
     };
+
     DiagramBuilderLayer.prototype.renameLayerKeyDown = function (args) {
         if (args.which === 13) {
             this.renameLayer(args);
@@ -133,7 +150,7 @@ var DiagramBuilderLayer = (function () {
     };
     DiagramBuilderLayer.prototype.changeLayerSelection = function (args) {
         var element = args.target;
-        var layerName = element.className.replace('db-layer-lock e-control e-btn ', '').replace(' e-icon-btn', '').replace(' e-ripple', '');
+        var layerName = element.className.replace('db-layer-lock e-control e-btn e-lib', '').replace(' e-icon-btn', '').replace(' e-ripple', '').trim();
         var layer = this.findLayer(layerName);
         layer.lock = !layer.lock;
         element.ej2_instances[0].iconCss = layer.lock ? 'sf-icon-Lock' : 'sf-icon-Unlock';
@@ -143,7 +160,7 @@ var DiagramBuilderLayer = (function () {
     };
     DiagramBuilderLayer.prototype.changeLayerVisibility = function (args) {
         var element = args.target;
-        var layerName = element.className.replace('db-layer-visible e-control e-btn ', '').replace(' e-icon-btn', '').replace(' e-ripple', '');
+        var layerName = element.className.replace('db-layer-visible e-control e-btn e-lib', '').replace(' e-icon-btn', '').replace(' e-ripple', '').trim();
         var layer = this.findLayer(layerName);
         layer.visible = !layer.visible;
         element.ej2_instances[0].iconCss = layer.visible ? 'sf-icon-View' : 'sf-icon-Invisible';
@@ -236,7 +253,7 @@ var DiagramBuilderLayer = (function () {
     DiagramBuilderLayer.prototype.findLayer = function (layerName) {
         var layers = this.getLayers();
         for (var i = 0; i < layers.length; i++) {
-            if (layers[i].id === layerName) {
+            if (layers[i].id + ' db-layer-processed' === layerName) {
                 return layers[i];
             }
         }
