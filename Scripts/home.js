@@ -18,6 +18,10 @@ var downloadFile;
 var diagramThemes = new DiagramTheme(selectedItem);
 
 window.onload = function () {
+    var hideLicense = document.getElementById("btnFileMenu-popup");
+    if (hideLicense) {
+        hideLicense.previousElementSibling.style.display = "none";
+    }
     diagram = document.getElementById("diagram").ej2_instances[0];
     symbolpalette = document.getElementById("symbolpalette").ej2_instances[0];
     openTemplateDialog = document.getElementById("openTemplateDialog").ej2_instances[0];
