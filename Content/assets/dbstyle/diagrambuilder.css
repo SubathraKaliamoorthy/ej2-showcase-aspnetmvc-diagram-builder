@@ -155,7 +155,6 @@ input, button, select, textarea {
     background-color:#fafafa;
     width:100%;
     height:calc(100% - 28px);
-    overflow:auto;
 }
 
 .sidebar.show-overview .db-palette-parent {

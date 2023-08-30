@@ -1,18 +1,17 @@
-﻿using Syncfusion.EJ2.Diagrams;
-using Syncfusion.EJ2.Navigations;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using NodeAnnotationIssue.Models;
-using System.ComponentModel;
 using Syncfusion.EJ2;
 using Newtonsoft.Json;
+using NodeAnnotationIssue.Models;
 using Syncfusion.EJ2.Popups;
-using static NodeAnnotationIssue.Controllers.HomeController;
+using Syncfusion.EJ2.Diagrams;
 
-namespace NodeAnnotationIssue.Controllers
+namespace DiagramBuilder.Controllers
 {
     public class HomeController : Controller
     {
@@ -86,7 +85,7 @@ namespace NodeAnnotationIssue.Controllers
             buttons.Add(new DialogDialogButton() { Click = "btnCancelClick", ButtonModel = new ButtonModel() { isPrimary = true, cssClass = "e-flat e-db-primary", content = "Cancel" } });
             ViewBag.DefaultButtons = buttons;
 
-            List <DialogDialogButton> buttons1 = new List<DialogDialogButton>() { };
+            List<DialogDialogButton> buttons1 = new List<DialogDialogButton>() { };
             buttons1.Add(new DialogDialogButton() { Click = "btnDeleteConfirmation", ButtonModel = new ButtonModel() { isPrimary = true, cssClass = "e-flat e-db-primary", content = "Ok" } });
             ViewBag.deleteconfirmation = buttons;
 
@@ -253,10 +252,8 @@ namespace NodeAnnotationIssue.Controllers
             DiagramGridlines grIdLines = new DiagramGridlines()
             { LineColor = "#EEEEEE", LineIntervals = intervals };
             ViewBag.gridLines = grIdLines;
-
             return View();
         }
-
         public class ButtonModel
         {
             public string content { get; set; }
@@ -321,6 +318,6 @@ namespace NodeAnnotationIssue.Controllers
 
         }
 
-    }
 
+    }
 }

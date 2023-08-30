@@ -718,7 +718,7 @@ var UtilityMethods = (function () {
                 }
                 for (var i_1 = 0; i_1 < keys.length; i_1++) {
                     var keyValue = nodeInfo[keys[i_1]];
-                    if (keyValue && keyValue.type === 'bindingField') {
+                    if (keyValue.type === 'bindingField') {
                         if (keyValue.checked) {
                             if (bindBindingFields) {
                                 bindingFields.push(keys[i_1]);
