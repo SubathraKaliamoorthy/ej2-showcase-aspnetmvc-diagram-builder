@@ -10,7 +10,7 @@ var Palettes = (function () {
     Palettes.prototype.getSymbolPalette = function () {
         var palettes = [
             { id: 'flow', expanded: true, symbols: Palettes.prototype.getFlowShapes(), title: 'Flow Shapes' },
-            { id: 'basic', expanded: false, symbols: Palettes.prototype.getBasicShapess(), title: 'Basic Shapes' },
+            { id: 'basic', expanded: false, symbols: Palettes.prototype.getBasicShapes(), title: 'Basic Shapes' },
             { id: 'bpmn', expanded: false, symbols: Palettes.prototype.getBPMNShapes(), title: 'BPMN Shapes' },
             { id: 'connectors', expanded: false, symbols: Palettes.prototype.getConnectors(), title: 'Connectors' }
         ];
