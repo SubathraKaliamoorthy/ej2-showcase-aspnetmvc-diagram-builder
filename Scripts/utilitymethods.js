@@ -745,7 +745,7 @@ var UtilityMethods = (function () {
                     node.maxHeight = 100;
                     selectedItem.selectedDiagram.dataBind();
                     node.shape = {
-                        type: 'Image', source: nodeInfo[propName] && nodeInfo[propName].value ? nodeInfo[propName].value.toString() : './Content/assets/dbstyle/orgchart_images/blank-male.jpg',
+                        type: 'Image', source: nodeInfo[propName] && nodeInfo[propName].value ? nodeInfo[propName].value.toString() : '/Content/assets/dbstyle/orgchart_images/blank-male.jpg',
                         align: 'XMinYMin', scale: 'Meet'
                     };
                     selectedItem.selectedDiagram.dataBind();
