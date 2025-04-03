@@ -173,6 +173,9 @@
             selectedItem.preventPropertyChange = false;
         }
     };
+    DiagramClientSideEvents.prototype.loadEvent = function (args) {
+        document.getElementsByClassName('diagrambuilder-container')[0].style.display = 'block';
+    };
     DiagramClientSideEvents.prototype.nodeSizeChange = function (args) {
         selectedItem.preventPropertyChange = true;
         document.getElementById('nodeWidth').ej2_instances[0].value = (Math.round(args.newValue.width * 100) / 100);
@@ -190,6 +193,7 @@
     };
     DiagramClientSideEvents.prototype.scrollChange = function (args) {
         selectedItem.scrollSettings.currentZoom = (args.newValue.CurrentZoom * 100).toFixed() + '%';
+        zoomCurrentValue.content = selectedItem.scrollSettings.currentZoom;
     };
     DiagramClientSideEvents.prototype.nodeRotationChange = function (args) {
         selectedItem.preventPropertyChange = true;

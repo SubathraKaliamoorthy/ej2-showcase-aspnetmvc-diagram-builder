@@ -228,12 +228,16 @@
         if (diagram.selectedItems.nodes.length > 0) {
             var node = diagram.selectedItems.nodes[0];
             var connector = this.getConnector(diagram.connectors, node.inEdges[0]);
-            var parentNode = this.getNode(diagram.nodes, connector.sourceID);
-            for (var i = 0; i < parentNode.outEdges.length; i++) {
-                connector = this.getConnector(diagram.connectors, parentNode.outEdges[i]);
-                var childNode = this.getNode(diagram.nodes, connector.targetID);
-                if (childNode) {
-                    sameLevelNodes.push(childNode);
+            if (connector) {
+                var parentNode = this.getNode(diagram.nodes, connector.sourceID);
+                if (parentNode) {
+                    for (var i = 0; i < parentNode.outEdges.length; i++) {
+                        connector = this.getConnector(diagram.connectors, parentNode.outEdges[i]);
+                        var childNode = this.getNode(diagram.nodes, connector.targetID);
+                        if (childNode) {
+                            sameLevelNodes.push(childNode);
+                        }
+                    }
                 }
             }
         }
@@ -483,8 +487,10 @@ var OrgChartUtilityMethods = (function () {
     };
     OrgChartUtilityMethods.onHideNodeClick = function () {
         var node1 = MindMapUtilityMethods.getNode(this.selectedItem.selectedDiagram.nodes, 'textNode');
-        node1.visible = !node1.visible;
-        this.selectedItem.selectedDiagram.dataBind();
+        if (node1) {
+            node1.visible = !node1.visible;
+            this.selectedItem.selectedDiagram.dataBind();
+        }
     };
     OrgChartUtilityMethods.getShortCutString = function () {
         return '<div style="width: 400px; height: 300px; padding: 10px; background-color: #FFF7B5; border: 1px solid #FFF7B5">' +
