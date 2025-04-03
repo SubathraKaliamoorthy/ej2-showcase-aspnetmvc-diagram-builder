@@ -50,7 +50,7 @@ var DiagramBuilderLayer = (function () {
             layerTemplate.className = 'db-layer-template active';
         }
         var layerNameElement = layerTemplate.getElementsByClassName('db-layer-name')[0];
-        layerNameElement.innerHTML = layer.addInfo.name;
+        layerNameElement.innerHTML = layer.addInfo ? layer.addInfo.name : 'default_layer';
         layerNameElement.className = 'db-layer-name ' + layer.id;
         layerNameElement.parentNode.style.width = 'calc(100% - ' + 88 + 'px)';
         return layerTemplate;
@@ -221,7 +221,7 @@ var DiagramBuilderLayer = (function () {
         btnWindow.ej2_instances[0].items[3].iconCss = '';
     };
     DiagramBuilderLayer.prototype.btnDuplicateLayer = function () {
-        var name = this.selectedItem.selectedDiagram.activeLayer.addInfo.name;
+        var name = this.selectedItem.selectedDiagram.activeLayer.addInfo ? this.selectedItem.selectedDiagram.activeLayer.addInfo.name : "default_layer";
         this.selectedItem.selectedDiagram.cloneLayer(this.selectedItem.selectedDiagram.activeLayer.id);
         this.selectedItem.selectedDiagram.layers[this.selectedItem.selectedDiagram.layers.length - 1].addInfo = {
             'name': name + ' Copy'
