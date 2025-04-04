@@ -18,12 +18,16 @@ var downloadFile;
 var diagramThemes = new DiagramTheme(selectedItem);
 
 window.onload = function () {
+    var hideLicense = document.getElementById("btnFileMenu-popup");
+    if (hideLicense) {
+        hideLicense.previousElementSibling.style.display = "none";
+    }
     diagram = document.getElementById("diagram").ej2_instances[0];
     symbolpalette = document.getElementById("symbolpalette").ej2_instances[0];
+    document.getElementById('symbolpalette').classList.add('e-symbolpalette');
     openTemplateDialog = document.getElementById("openTemplateDialog").ej2_instances[0];
     saveDialog = document.getElementById("saveDialog").ej2_instances[0];
     exportDialog = document.getElementById("exportDialog").ej2_instances[0];
-    printDialog = document.getElementById("printDialog").ej2_instances[0];
     tooltipDialog = document.getElementById("tooltipDialog").ej2_instances[0];
     tooltip = document.getElementById("tooltip").ej2_instances[0];
     themeDialog = document.getElementById("themeDialog").ej2_instances[0];
@@ -61,9 +65,13 @@ window.onload = function () {
 
 function setPaletteNodeDefaults(node) {
     if (!(node.addInfo && (node.addInfo).type === 'CustomShapes') && (!node.children)) {
-        if (node.id === 'Terminator' || node.id === 'Process') {
-            node.width = 130;
-            node.height = 65;
+        if (node.id === 'Terminator' || node.id === 'Process' || node.id === 'Delay') {
+            node.width = 80;
+            node.height = 40;
+        } else if (node.id === 'Decision' || node.id === 'Document' || node.id === 'PreDefinedProcess' ||
+            node.id === 'PaperTap' || node.id === 'DirectData' || node.id === 'MultiDocument' || node.id === 'Data') {
+            node.width = 50;
+            node.height = 40;
         } else {
             node.width = 50;
             node.height = 50;
@@ -248,10 +256,6 @@ var diagram = new ej.diagrams.Diagram({
     scrollSettings: { canAutoScroll: true, scrollLimit: 'Infinity', minZoom: 0.25, maxZoom: 30 },
     selectedItems: { constraints: ej.diagrams.SelectorConstraints.All & ~ej.diagrams.SelectorConstraints.ToolTip },
     getNodeDefaults: function (node, diagram) {
-        if (!(selectedItem.diagramType === 'MindMap' || selectedItem.diagramType === 'OrgChart' || selectedItem.diagramType === 'FlowChart')) {
-            node.width = 100;
-            node.height = 40;
-        }
         if (selectedItem.diagramType === 'GeneralDiagram') {
             if (node.shape.shape === 'Decision') {
                 node.width = 88;
@@ -289,6 +293,7 @@ var diagram = new ej.diagrams.Diagram({
     },
     selectionChange: function (args) { DiagramClientSideEvents.prototype.selectionChange(args); },
     positionChange: function (args) { DiagramClientSideEvents.prototype.nodePositionChange(args); },
+    load: function (args) { DiagramClientSideEvents.prototype.loadEvent(); },
     sizeChange: function (args) { DiagramClientSideEvents.prototype.nodeSizeChange(args); },
     rotateChange: function (args) { DiagramClientSideEvents.prototype.nodeRotationChange(args); },
     contextMenuOpen: function (args) { DiagramClientSideEvents.prototype.diagramContextMenuOpen(args); },
@@ -530,76 +535,6 @@ var exportRegion = new ej.dropdowns.DropDownList({
 });
 exportRegion.appendTo('#exportRegion');
 
-var printDialog = new ej.popups.Dialog({
-    width: '335px',
-    header: 'Print Diagram',
-    target: document.body,
-    isModal: true,
-    animationSettings: { effect: 'None' },
-    buttons: getDialogButtons('print'),
-    visible: false,
-    showCloseIcon: true,
-    content: '<div id="printDialogContent"><div class="row"><div class="row">Region</div> <div class="row db-dialog-child-prop-row">' +
-        '<input type="text" id="printRegionDropdown"/> </div> </div><div class="row db-dialog-prop-row"><div class="row">Print Settings</div>' +
-        '<div class="row db-dialog-child-prop-row"><input type="text" id="printPaperSizeDropdown"/> </div> </div>' +
-        '<div id="printCustomSize" class="row db-dialog-prop-row" style="display:none; height: 28px;"> <div class="col-xs-6 db-col-left">' +
-        '<div class="db-text-container"><div class="db-text"><span>W</span></div><div class="db-text-input"><input id="printPageWidth" type="text" />' +
-        '</div> </div> </div> <div class="col-xs-6 db-col-right"><div class="db-text-container"> <div class="db-text"><span>H</span></div>' +
-        '<div class="db-text-input"><input id="printPageHeight" type="text" /></div></div></div></div><div id="printOrientation" class="row db-dialog-prop-row" style="height: 28px; padding: 5px 0px;">' +
-        '<div class="col-xs-3 db-prop-col-style" style="margin-right: 8px;"><input id="printPortrait" type="radio"></div> <div class="col-xs-3 db-prop-col-style">' +
-        '<input id="printLandscape" type="radio"></div></div> <div class="row db-dialog-prop-row" style="margin-top: 16px"> <input id="printMultiplePage" type="checkbox" /> </div> </div>'
-});
-printDialog.appendTo('#printDialog');
-
-// dropdown template for printDialog control
-var printRegionDropdown = new ej.dropdowns.DropDownList({
-    dataSource: DropDownDataSources.prototype.diagramRegions(),
-    fields: { text: 'text', value: 'value' },
-    value: selectedItem.printSettings.region
-});
-printRegionDropdown.appendTo('#printRegionDropdown');
-
-// dropdown template for printDialog control
-var printPaperSizeDropdown = new ej.dropdowns.DropDownList({
-    dataSource: DropDownDataSources.prototype.paperList(),
-    fields: { text: 'text', value: 'value' },
-    value: selectedItem.printSettings.paperSize
-});
-printPaperSizeDropdown.appendTo('#printPaperSizeDropdown');
-
-// numerictextbox template for printDialog control
-var printPageWidth = new ej.inputs.NumericTextBox({
-    min: 100,
-    step: 1,
-    format: 'n0',
-    value: selectedItem.printSettings.pageWidth
-});
-printPageWidth.appendTo('#printPageWidth');
-
-// numerictextbox template for printDialog control
-var printPageHeight = new ej.inputs.NumericTextBox({
-    min: 100,
-    step: 1,
-    format: 'n0',
-    value: selectedItem.printSettings.pageHeight
-});
-printPageHeight.appendTo('#printPageHeight');
-
-// radiobutton template for printDialog control
-var printPortrait = new ej.buttons.RadioButton({ label: 'Portrait', name: 'printSettings', checked: selectedItem.printSettings.isPortrait });
-printPortrait.appendTo('#printPortrait');
-
-// radiobutton template for printDialog control
-var printLandscape = new ej.buttons.RadioButton({ label: 'Landscape', name: 'printSettings', checked: selectedItem.printSettings.isLandscape });
-printLandscape.appendTo('#printLandscape');
-
-// checkbox template for printDialog control
-var printMultiplePage = new ej.buttons.CheckBox({
-    label: 'Scale to fit 1 page', checked: selectedItem.printSettings.multiplePage,
-    change: function (args) { DiagramPropertyBinding.prototype.multiplePage(args); }
-});
-printMultiplePage.appendTo('#printMultiplePage');
-
 //doubt dialog
 var fileUploadDialog = new ej.popups.Dialog({
     width: '500px',
@@ -767,7 +702,7 @@ var moreShapesDialogContent = new ej.popups.Dialog({
     buttons: getDialogButtons('moreshapes'),
     content: '<div class="row"><div class="col-xs-3 temp-left-pane"><div id="moreShapesList" tabindex="1"></div></div>' +
         '<div class="col-xs-9 diagramTemplates temp-right-pane" style="padding-left:0px;padding-right:0px">' +
-        '<img id="shapePreviewImage" src="./Content/assets/dbstyle/shapes_images/flow.png" /></div></div></div>'
+        '<img id="shapePreviewImage" src="/Content/assets/dbstyle/shapes_images/flow.png" /></div></div></div>'
 });
 moreShapesDialogContent.appendTo('#moreShapesDialogContent');
 
@@ -1024,33 +959,10 @@ function btnExportClick() {
 }
 
 function btnPrintClick() {
-    var pageWidth = selectedItem.printSettings.pageWidth;
-    var pageHeight = selectedItem.printSettings.pageHeight;
-    var paperSize = selectedItem.utilityMethods.getPaperSize(selectedItem.printSettings.paperSize);
-    if (paperSize.pageHeight && paperSize.pageWidth) {
-        pageWidth = paperSize.pageWidth;
-        pageHeight = paperSize.pageHeight;
-    }
-    if (selectedItem.pageSettings.isPortrait) {
-        if (pageWidth > pageHeight) {
-            var temp = pageWidth;
-            pageWidth = pageHeight;
-            pageHeight = temp;
-        }
-    } else {
-        if (pageHeight > pageWidth) {
-            var temp1 = pageHeight;
-            pageHeight = pageWidth;
-            pageWidth = temp1;
-        }
-    }
     var diagram = selectedItem.selectedDiagram;
     diagram.print({
-        region: selectedItem.printSettings.region, pageHeight: pageHeight, pageWidth: pageWidth,
-        multiplePage: !selectedItem.printSettings.multiplePage,
-        pageOrientation: selectedItem.printSettings.isPortrait ? 'Portrait' : 'Landscape'
+        region: 'Content',
     });
-    printDialog.hide();
 }
 
 function getUploadButtons() {
@@ -1079,7 +991,7 @@ function closeThemeDialog(args) {
 
 function loadDiagram(event) {
     page.loadPage(event.target.result.toString());
-    page.loadDiagramSettings();
+    page.loadDiagramSettings(event.target.result.toString());
     OrgChartUtilityMethods.uploadDialog.hide();
 }
 
@@ -1581,6 +1493,10 @@ function btnMoreShapes(args) {
         symbolpalette.palettes = Palettes.prototype.getPalettes(listSelectedItem.text);
         moreShapesDialog.hide();
     }
+    setTimeout(() => {
+        let paletteObj = document.getElementById('symbolpalette');
+        paletteObj.classList.add('e-symbolpalette');
+    },350)
 }
 
 function listViewSelectionChange(args) {
@@ -1639,9 +1555,6 @@ function btnCancelClick(args) {
     switch (key) {
         case 'exportDialog':
             exportDialog.hide();
-            break;
-        case 'printDialog':
-            printDialog.hide();
             break;
         case 'saveDialog':
             saveDialog.hide();
@@ -1976,12 +1889,7 @@ function menuClick(args) {
             saveDialog.show();
             break;
         case 'print':
-            selectedItem.printSettings.pageHeight = selectedItem.pageSettings.pageHeight;
-            selectedItem.printSettings.pageWidth = selectedItem.pageSettings.pageWidth;
-            selectedItem.printSettings.paperSize = selectedItem.pageSettings.paperSize;
-            selectedItem.printSettings.isPortrait = selectedItem.pageSettings.isPortrait;
-            selectedItem.printSettings.isLandscape = !selectedItem.pageSettings.isPortrait;
-            printDialog.show();
+            btnPrintClick();
             break;
         case 'export':
             exportDialog.show();
@@ -2312,12 +2220,7 @@ function menuClick(args) {
             saveDialog.show();
             break;
         case 'print':
-            document.getElementById("printPageHeight").ej2_instances[0] = document.getElementById("pageHeight").ej2_instances[0];
-            document.getElementById("printPageWidth").ej2_instances[0] = document.getElementById("pageWidth").ej2_instances[0];
-            document.getElementById("printPaperSizeDropdown").ej2_instances[0] = document.getElementById("pageSettingsList").ej2_instances[0];
-            document.getElementById("printPortrait").ej2_instances[0] = document.getElementById("pagePortrait").ej2_instances[0];
-            document.getElementById("printLandscape").ej2_instances[0] = !document.getElementById("pagePortrait").ej2_instances[0];
-            printDialog.show();
+            btnPrintClick();
             break;
         case 'export':
             exportDialog.show();
@@ -2546,42 +2449,13 @@ function getCommandSettings() {
 
 function btnExportClick() {
     var diagram = selectedItem.selectedDiagram;
+    document.getElementById("exportfileName").value = document.getElementById('diagramName').innerHtml;
     diagram.exportDiagram({
         fileName: document.getElementById("exportfileName").value,
         format: document.getElementById("exportFormat").value,
         region: document.getElementById("exportRegion").value
     });
     exportDialog.hide();
-}
-
-function btnPrintClick() {
-    var pageWidth = selectedItem.printSettings.pageWidth;
-    var pageHeight = selectedItem.printSettings.pageHeight;
-    var paperSize = selectedItem.utilityMethods.getPaperSize(selectedItem.printSettings.paperSize);
-    if (paperSize.pageHeight && paperSize.pageWidth) {
-        pageWidth = paperSize.pageWidth;
-        pageHeight = paperSize.pageHeight;
-    }
-    if (selectedItem.pageSettings.isPortrait) {
-        if (pageWidth > pageHeight) {
-            var temp = pageWidth;
-            pageWidth = pageHeight;
-            pageHeight = temp;
-        }
-    } else {
-        if (pageHeight > pageWidth) {
-            var temp1 = pageHeight;
-            pageHeight = pageWidth;
-            pageWidth = temp1;
-        }
-    }
-    var diagram = selectedItem.selectedDiagram;
-    diagram.print({
-        region: selectedItem.printSettings.region, pageHeight: pageHeight, pageWidth: pageWidth,
-        multiplePage: !selectedItem.printSettings.multiplePage,
-        pageOrientation: selectedItem.printSettings.isPortrait ? 'Portrait' : 'Landscape'
-    });
-    printDialog.hide();
 }
 
 function getUploadButtons() {
