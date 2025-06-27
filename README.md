@@ -1,4 +1,4 @@
-[![.NET](https://github.com/SubathraKaliamoorthy/ej2-showcase-aspnetmvc-diagram-builder/actions/workflows/dotnet.yml/badge.svg)](https://github.com/SubathraKaliamoorthy/ej2-showcase-aspnetmvc-diagram-builder/actions/workflows/dotnet.yml)
+[![.NET](https://github.com/syncfusion/ej2-showcase-aspnetmvc-diagram-builder/actions/workflows/dotnet.yml/badge.svg)](https://github.com/syncfusion/ej2-showcase-aspnetmvc-diagram-builder/actions/workflows/dotnet.yml)
 
 # ej2-showcase-aspnetmvc-diagram-builder
 The aspnet MVC diagram builder application is used to create the diagrams such as "Flow Charts", "MindMap Diagrams" and "Organization Chart" through Visual Interface.
